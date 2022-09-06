@@ -4,7 +4,7 @@ Projeto Conceitual Banco Dados Oficina Mecânica -
 Criado um esquema conceitual do zero. A partir da narrativa foram criadas todas as entidades, relacionamentos e atributos. 
 Caso encontre algo que não foi definido na narrativa, utilize a sua compreensão do contexto e deixe uma descrição no README do seu github. para verificação.
 
-O esquema adicionado a um repositório do Github para futura avaliação do desafio de projeto. 
+O esquema foi adicionado a um repositório do Github para futura avaliação do desafio de projeto. 
 Adicionado ao Readme a descrição do projeto conceitual para fornecer o contexto sobre seu esquema.
 
 Objetivo:
