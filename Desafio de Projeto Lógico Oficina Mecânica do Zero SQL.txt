@@ -1,0 +1,122 @@
+
+- criando banco de dados para o cenário Oficina Mecanica
+create database oficina_mecanica;
+use oficina_mecanica;
+
+- criando tabela clientes
+create table clientes (
+        id_cliente int primary key auto_increment,
+        nome_cliente varchar (30),
+        CPF char(11) unique,
+        modelo_do_veiculo varchar (30),
+        Placa_do_veiculo char(7) unique,
+        contato_cliente int 
+);
+
+insert into clientes (nome_cliente, CPF, modelo_do_veiculo, Placa_do_veiculo,contato_cliente) values
+                        ('João Pereira', '47224342385','corsa','JJI5j54','609311816'),
+                        ('Mari Silva', '23882473385','onix','BBO3D24','349166089'),
+                        ('Sonia Costa', '34222432385','Hilux','ABF2R41','801781934');
+
+- criando tabela equipe_de_mecanicos
+create table equipe_de_mecanicos (
+        id_mecaninco int primary key auto_increment,
+        nome_mecanico varchar (30),
+        endereço varchar (30),
+        especialidade_mecanica enum('Funilaria','Eletrica','Arrefecimento','Motor','Cambio')
+);
+
+insert into equipe_de_mecanicos (nome_mecanico,endereço,especialidade_mecanica) values
+                                ('Jose Pedro Matos', 'R serafim 25','Eletrica'),
+                                ('Marcio Silva', 'R Nobre 585', 'Motor'),
+                                ('Hugo Clementino','R Capitão Pereira 551', 'Funilaria');
+                                
+- criando tabela ordem_de_servico
+create table ordem_de_servico (
+        id_os int primary key auto_increment,
+        data_os date,
+        status_os enum('analisando','em andamento','aguardando aprovação','aguardando peça','concluido'),
+        data_conclusao date,
+        valor float,
+        tipo_os enum ('concerto','revisão'),
+        Descricao_serviço varchar (255),
+        idCliente_os int,
+        idMecanico_os int,
+        constraint fk_ordem_de_servico_cliente foreign key (idCliente_os) references clientes(id_cliente),
+        constraint fk_ordem_de_servico_mecanico foreign key (idMecanico_os) references equipe_de_mecanicos(id_mecaninco)        
+);
+
+insert into ordem_de_servico (data_os, status_os,data_conclusao,valor,tipo_os,Descricao_serviço,idCliente_os,idMecanico_os) values
+                             ('2022-03-25', 'aprovada','2022-04-15','200','concerto','Troca da longarina','2','1'),
+                             ('2022-03-28', 'em analise','2022-04-18','500','revisão','motor falhando','3','2'),
+                             ('2022-03-29', 'aguardando aprovação','2022-04-22','350','ajuste','farol não liga','4','3');
+
+- criando tabela mao_de_obra                             
+create table mao_de_obra(
+        id_mao_de_obra int primary key auto_increment,
+        valor_mao_de_obra float,
+        idMecanico_resposavel int,
+        idOrcamento_mao_de_obra int,
+        constraint fk_mao_de_obra_mecanico foreign key (idMecanico_resposavel) references equipe_de_mecanicos(id_mecaninco),
+        constraint fk_mao_de_obra_orcamento foreign key (idOrcamento_mao_de_obra) references orcamento(Id_orcamento)
+);
+
+insert into mao_de_obra (valor_mao_de_obra,idMecanico_resposavel,idOrcamento_mao_de_obra) values
+                        ('285','3','6'),
+                        ('577','3','5'),
+                        ('850','3','8');
+
+- criando tabela orcamento 
+create table orcamento(
+        Id_orcamento int primary key auto_increment,
+        Numero_os int,
+        valor_orcamento float,
+        id_cliente_orcamento int,
+        constraint fk_orcamento_Numero_os foreign key (Numero_os) references ordem_de_servico(id_os),
+        constraint fk_orcamento_id_cliente foreign key (id_cliente_orcamento) references clientes(id_cliente)
+);
+
+insert into orcamento (Numero_os ,valor_orcamento, id_cliente_orcamento)values
+                        ('5','132',4),
+                        ('8','859',5),
+                        ('6','900',2);
+
+- criando tabela peca
+create table peca(
+        id_peca int primary key auto_increment,
+        descricao_peca varchar (255),
+        valor_peca float,
+        idOrcamento_peca int,
+        constraint fk_peca_idOrcamento_peca foreign key (idOrcamento_peca) references orcamento(Id_orcamento)
+);
+
+insert into peca (descricao_peca,valor_peca,idOrcamento_peca) values
+                    ('Parabrisas','150',1),
+                    ('Junta hemocinética','230','3'),
+                    ('porta traseira','480','8');
+ 
+- ordenando o conteúdo da tabela clientes pelo nome
+select * from clientes
+order by nome_cliente;
+
+- Verificando o status da ordem de serviço do cliente combinado com o valor do serviço
+select clientes.nome_cliente, orcamento.valor_orcamento, ordem_de_servico.status_os from clientes
+INNER JOIN orcamento
+on clientes.id_cliente = orcamento.id_cliente_orcamento
+JOIN ordem_de_servico
+on ordem_de_servico.id_os = orcamento.id_cliente_orcamento;
+
+- Verificando o tipo de serviço solicitado pelo cliente combinado com o nome do mecanico resposavel
+select clientes.nome_cliente, ordem_de_servico.Descricao_serviço, equipe_de_mecanicos.nome_mecanico from clientes
+INNER JOIN ordem_de_servico
+on clientes.id_cliente = ordem_de_servico.idCliente_os
+JOIN equipe_de_mecanicos
+on equipe_de_mecanicos.id_mecaninco = ordem_de_servico.idMecanico_os;
+
+- Verificando a especialidadade de cada mecanico 
+select equipe_de_mecanicos.nome_mecanico, equipe_de_mecanicos.especialidade_mecanica from  equipe_de_mecanicos;
+
+- Veroificando o valor de cada peça para cada solicitação do cliente 
+select peca.descricao_peca, peca.valor_peca, orcamento.id_cliente_orcamento from orcamento
+INNER JOIN peca
+on orcamento.Id_orcamento = peca.idOrcamento_peca;

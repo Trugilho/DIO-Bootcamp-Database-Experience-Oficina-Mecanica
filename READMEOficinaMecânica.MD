@@ -1,0 +1,3 @@
+Projeto lógico de Banco de Dados Oficina Mecânica do Zero
+Neste desafio, foi utilizado um esquema conceitual, criado no desafio do módulo de modelagem de BD com modelo ER, para criar o esquema lógico para o contexto de uma oficina mecânica. Foram definidas todas as etapas. Desde o esquema até a implementação do banco de dados.
+Foi realizada a criação do Script SQL para criação do esquema do banco de dados
